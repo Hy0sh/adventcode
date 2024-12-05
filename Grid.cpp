@@ -4,19 +4,23 @@
 
 using namespace std;
 
-const string DIRECTION_RIGHT = "right";
-const string DIRECTION_LEFT = "left";
-const string DIRECTION_UP = "up";
-const string DIRECTION_DOWN = "down";
-const string DIRECTION_UP_RIGHT = "up_right";
-const string DIRECTION_UP_LEFT = "up_left";
-const string DIRECTION_DOWN_RIGHT = "down_right";
-const string DIRECTION_DOWN_LEFT = "down_left";
+enum Direction {
+    RIGHT,
+    LEFT,
+    UP,
+    DOWN,
+    UP_RIGHT,
+    UP_LEFT,
+    DOWN_RIGHT,
+    DOWN_LEFT,
+};
 
 class Grid {
     public: 
         Grid() {
             rows = vector<vector<char>>();
+            x= 0;
+            y = 0;
         }
 
         static Grid *createFromInput(string input) {
@@ -33,8 +37,17 @@ class Grid {
             return grid;
         }
 
-        static vector<string> getAviablesDirections() {
-            return {DIRECTION_RIGHT, DIRECTION_LEFT, DIRECTION_UP, DIRECTION_DOWN, DIRECTION_UP_RIGHT, DIRECTION_UP_LEFT, DIRECTION_DOWN_RIGHT, DIRECTION_DOWN_LEFT};
+        static vector<Direction> getDirections() {
+            return {
+                Direction::RIGHT,
+                Direction::LEFT,
+                Direction::UP,
+                Direction::DOWN,
+                Direction::UP_RIGHT,
+                Direction::UP_LEFT,
+                Direction::DOWN_RIGHT,
+                Direction::DOWN_LEFT
+            };
         }
 
         vector<vector<char>> getRows() {
@@ -52,6 +65,33 @@ class Grid {
             return rows[x];
         }
 
+        bool next()
+        {
+            if(y + 1 < rows[x].size()) {
+                y++;
+            } else if(x + 1 < rows.size()) {
+                x++;
+                y = 0;
+            } else {
+                return false;
+            }
+
+            return true;
+        }
+
+        vector<int> getPos() {
+            return {x, y};
+        }
+
+        void setPos(int x, int y) {
+            this->x = x;
+            this->y = y;
+        }
+
+        char current() {
+            return get(x, y);
+        }
+
         char get(int x, int y) {
             if(x < 0 || x >= rows.size() || y < 0 || y >= rows[0].size()) {
                 return '\0';
@@ -59,61 +99,79 @@ class Grid {
             return rows[x][y];
         }
 
-        string getStr(int startX, int startY, string direction, int length) {
-            if(!isDirectionValid(direction)) {
-                return "";
+        char getByDirection(Direction direction) {
+
+            switch(direction) {
+                case Direction::RIGHT:
+                    return get(x, y + 1);
+                case Direction::LEFT:
+                    return get(x, y - 1);
+                case Direction::UP:
+                    return get(x - 1, y);
+                case Direction::DOWN:
+                    return get(x + 1, y);
+                case Direction::UP_RIGHT:
+                    return get(x - 1, y + 1);
+                case Direction::UP_LEFT:
+                    return get(x - 1, y - 1);
+                case Direction::DOWN_RIGHT:
+                    return get(x + 1, y + 1);
+                case Direction::DOWN_LEFT:
+                    return get(x + 1, y - 1);
             }
 
+            return '\0';
+        }
+
+        string getStr(Direction direction, int length) {
             string str = "";
 
-            if(direction == DIRECTION_RIGHT) {
+            if(direction == Direction::RIGHT) {
                 for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX, startY + i));
+                    str.push_back(get(x, y + i));
                 }
-            } else if(direction == DIRECTION_LEFT) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX, startY - i));
+            }
+            if (direction == Direction::LEFT) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x, y - i));
                 }
-            } else if(direction == DIRECTION_UP) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX - i, startY));
+            }
+            if (direction == Direction::UP) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x - i, y));
                 }
-            } else if(direction == DIRECTION_DOWN) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX + i, startY));
+            }
+            if (direction == Direction::DOWN) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x + i, y));
                 }
-            } else if(direction == DIRECTION_UP_RIGHT) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX - i, startY + i));
+            }
+            if (direction == Direction::UP_RIGHT) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x - i, y + i));
                 }
-            } else if(direction == DIRECTION_UP_LEFT) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX - i, startY - i));
+            }
+            if (direction == Direction::UP_LEFT) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x - i, y - i));
                 }
-            } else if(direction == DIRECTION_DOWN_RIGHT) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX + i, startY + i));
+            }
+            if (direction == Direction::DOWN_RIGHT) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x + i, y + i));
                 }
-            } else if(direction == DIRECTION_DOWN_LEFT) {
-                for(int i = 0; i < length; i++) {
-                    str.push_back(get(startX + i, startY - i));
+            }
+            if (direction == Direction::DOWN_LEFT) {
+                for (int i = 0; i < length; i++) {
+                    str.push_back(get(x + i, y - i));
                 }
             }
 
             return str;
         }
 
-        bool isDirectionValid(string direction) {
-            return  direction == DIRECTION_RIGHT || 
-                    direction == DIRECTION_LEFT || 
-                    direction == DIRECTION_UP || 
-                    direction == DIRECTION_DOWN || 
-                    direction == DIRECTION_UP_RIGHT || 
-                    direction == DIRECTION_UP_LEFT || 
-                    direction == DIRECTION_DOWN_RIGHT || 
-                    direction == DIRECTION_DOWN_LEFT;
-        }
-
     private:
         vector<vector<char>> rows;
+        int x;
+        int y;
 };
