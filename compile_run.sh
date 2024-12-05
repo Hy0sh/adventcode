@@ -5,7 +5,12 @@ filname=$2
 testMode=$3
 
 if [ -z "$filname" ]; then
-    echo "Usage: $0 <file>"
+    echo "Usage: $0 <year> <day>"
+    exit 1
+fi
+
+if [ -z "$year" ]; then
+    echo "Usage: $0 <year> <day>"
     exit 1
 fi
 
