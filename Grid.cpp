@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include "Util.h"
+#include <climits>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ class Grid {
             rows = vector<vector<char>>();
             x= 0;
             y = 0;
+            debug = false;
         }
 
         static Grid *createFromInput(string input) {
@@ -79,8 +81,120 @@ class Grid {
             return true;
         }
 
+        bool nextInDirection(Direction direction)
+        {
+            switch(direction) {
+                case Direction::RIGHT:
+                    if(y + 1 < rows[x].size()) {
+                        y++;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::LEFT:
+                    if(y - 1 >= 0) {
+                        y--;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::UP:
+                    if(x - 1 >= 0) {
+                        x--;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::DOWN:
+                    if(x + 1 < rows.size()) {
+                        x++;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::UP_RIGHT:
+                    if (x - 1 >= 0 && y + 1 < rows[x].size()) {
+                        x--;
+                        y++;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::UP_LEFT:
+                    if (x - 1 >= 0 && y - 1 >= 0) {
+                        x--;
+                        y--;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::DOWN_RIGHT:
+                    if (x + 1 < rows.size() && y + 1 < rows[x].size()) {
+                        x++;
+                        y++;
+                    } else {
+                        return false;
+                    }
+                    break;
+                case Direction::DOWN_LEFT:
+                    if (x + 1 < rows.size() && y - 1 >= 0) {
+                        x++;
+                        y--;
+                    } else {
+                        return false;
+                    }
+                    break;
+            }
+
+            return true;
+        }
+
+        void backwardDirection(Direction previousdirection) {
+            Direction direction;
+            switch (previousdirection)
+            {
+                case Direction::RIGHT:
+                    direction = Direction::LEFT;
+                break;
+                case Direction::LEFT:
+                    direction = Direction::RIGHT;
+                break;
+                case Direction::UP:
+                    direction = Direction::DOWN;
+                break;
+                case Direction::DOWN:
+                    direction = Direction::UP;
+                break;
+                case Direction::UP_RIGHT:
+                    direction = Direction::DOWN_LEFT;
+                break;
+                case Direction::UP_LEFT:
+                    direction = Direction::DOWN_RIGHT;
+                break;
+                case Direction::DOWN_RIGHT:
+                    direction = Direction::UP_LEFT;
+                break;
+                case Direction::DOWN_LEFT:
+                    direction = Direction::UP_RIGHT;
+                break;
+            }
+            nextInDirection(direction);
+        }
+
         vector<int> getPos() {
             return {x, y};
+        }
+
+        int countChar(char c) {
+            int count = 0;
+            for(int i = 0; i < rows.size(); i++) {
+                for(int j = 0; j < rows[i].size(); j++) {
+                    if(rows[i][j] == c) {
+                        count++;
+                    }
+                }
+            }
+            return count;
         }
 
         void setPos(int x, int y) {
@@ -97,6 +211,22 @@ class Grid {
                 return '\0';
             }
             return rows[x][y];
+        }
+
+        void setDebug(bool debug) {
+            this->debug = debug;
+        }
+
+        void setDebugChar(char debugChar) {
+            this->debugChar = debugChar;
+        }
+
+        char getDebugChar() {
+            return debugChar;
+        }
+
+        void setCharAt(int x, int y, char c) {
+            rows[x][y] = c;
         }
 
         char getByDirection(Direction direction) {
@@ -121,6 +251,32 @@ class Grid {
             }
 
             return '\0';
+        }
+
+        vector<int> find(char c) {
+            for(int i = 0; i < rows.size(); i++) {
+                for(int j = 0; j < rows[i].size(); j++) {
+                    if(rows[i][j] == c) {
+                        return {i, j};
+                    }
+                }
+            }
+
+            return {-1, -1};
+        }
+
+        vector<int> findNext(char c, Direction direction) {
+            while(current() != c && current() != '\0' && nextInDirection(direction)) {
+                if(debug && current() != c && current() != '\0') {
+                    rows[x][y] = 'x';
+                }
+                if(current() == c || current() == '\0') {
+                    return {x, y};
+                }
+
+            }
+            
+            return {INT_MIN};
         }
 
         string getStr(Direction direction, int length) {
@@ -170,8 +326,20 @@ class Grid {
             return str;
         }
 
+        void print() {
+            cout << "Grid:\n";
+            for(int i = 0; i < rows.size(); i++) {
+                for(int j = 0; j < rows[i].size(); j++) {
+                    cout << rows[i][j];
+                }
+                cout << '\n';
+            }
+        }
+
     private:
         vector<vector<char>> rows;
         int x;
         int y;
+        bool debug;
+        char debugChar = 'x';
 };
