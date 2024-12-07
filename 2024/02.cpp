@@ -19,8 +19,8 @@ int solution_1(const string &input)
 		string decOrInc;
 		for (int i = 1; i < parts.size(); i++)
 		{
-			int a = stringToInt(parts[i - 1]);
-			int b = stringToInt(parts[i]);
+			int a = stoi(parts[i - 1]);
+			int b = stoi(parts[i]);
 			int diff = a - b;
 			if(i == 1) {
 				decOrInc = diff > 0 ? "dec" : "inc";
@@ -47,10 +47,10 @@ int solution_2(const string &input)
 		bool errorJocker = false;
 		bool forceResetDecOrInc = false;
 		string decOrInc;
-		int b = stringToInt(parts[0]);
+		int b = stoi(parts[0]);
 		for (int i = 1; i < parts.size(); i++)
 		{
-			int a = stringToInt(parts[i]);
+			int a = stoi(parts[i]);
 			int diff = a - b;
 			if(i == 1 || forceResetDecOrInc) {
 				decOrInc = diff > 0 ? "dec" : "inc";

@@ -12,8 +12,8 @@ int solution_1(const string &s)
 	for (auto i = sregex_iterator(s.begin(), s.end(), re); i != sregex_iterator(); i++)
 	{
 		smatch m = *i;
-		int a = stringToInt(m[1].str());
-		int b = stringToInt(m[2].str());
+		int a = stoi(m[1].str());
+		int b = stoi(m[2].str());
 		total += a * b;
 	}
 	return total;

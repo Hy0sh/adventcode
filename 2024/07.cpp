@@ -1,13 +1,14 @@
 #include <iostream>
 #include <map>
 #include "../Util.h"
-#include "../bigint.h"
+#include <stdint.h>
+#include <string>
 using namespace std;
 
 struct Instruction
 {
-	bigint result;
-	vector<bigint> numbers;
+	int64_t result;
+	vector<int64_t> numbers;
 };
 
 vector<Instruction> parseInstruction(const string &str)
@@ -17,12 +18,11 @@ vector<Instruction> parseInstruction(const string &str)
 	{
 		Instruction instr;
 		vector<string> parts = splitString(s, ':');
-		instr.result = bigint(parts[0]);
-		parts[1] = trim(parts[1]);
-		vector<string> parts2 = splitString(parts[1], ' ');
+		instr.result = strtoll(parts[0].c_str(), nullptr, 10);
+		vector<string> parts2 = splitString(trim(parts[1]), ' ');
 		for (auto &p : parts2)
 		{
-			instr.numbers.push_back(bigint(p));
+			instr.numbers.push_back(strtoll(p.c_str(), nullptr, 10));
 		}
 		instructions.push_back(instr);
 	}
@@ -51,28 +51,37 @@ vector<vector<char>> cartesianProduct(const vector<char> &vec, int length)
 	return result;
 }
 
-bigint resolve(const string &input, vector<char> product)
+int64_t resolve(const string &input, vector<char> product)
 {
 	vector<Instruction> instructions = parseInstruction(input);
 
-	bigint total = 0;
+	int64_t total = 0;
 	map<int, vector<vector<char>>> cachProduct;
 	for(auto &instr : instructions) {
 		if(cachProduct.find(instr.numbers.size()) == cachProduct.end()) {
 			cachProduct[instr.numbers.size()] = cartesianProduct(product, instr.numbers.size() - 1);
 		}
 		vector<vector<char>> products = cachProduct[instr.numbers.size()];
-		bigint subTotal = instr.numbers[0];
+		int64_t subTotal = instr.numbers[0];
 		for(auto &product : products) {
 			subTotal = instr.numbers[0];
 			for(int i = 0; i < product.size(); i++) {
-				if(product[i] == '+') {
-					subTotal += instr.numbers[i + 1];
-				} else if (product[i] == '|'){
-					subTotal |= instr.numbers[i + 1];
-				}
-				else {
-					subTotal *= instr.numbers[i + 1];
+				switch (product[i])
+				{
+					case '+':
+						subTotal += instr.numbers[i + 1];
+						break;
+					case '|':
+						subTotal = strtoll((to_string(subTotal) + to_string(instr.numbers[i + 1])).c_str(), nullptr, 10);
+						break;
+					case '*':
+						subTotal *= instr.numbers[i + 1];
+						break;
+				
+					default:
+						cerr << "Error: invalid product" << '\n';
+						exit(EXIT_FAILURE);
+						break;
 				}
 			}
 			if(subTotal == instr.result) {
@@ -85,12 +94,12 @@ bigint resolve(const string &input, vector<char> product)
 	return total;
 }
 
-bigint solution_1(const string &input)
+int64_t solution_1(const string &input)
 {	
 	return resolve(input, {'*', '+'});	
 }
 
-bigint solution_2(const string &input)
+int64_t solution_2(const string &input)
 {
 	return resolve(input, {'*', '+', '|'});
 }

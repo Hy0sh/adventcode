@@ -13,7 +13,7 @@ vector<vector<int>> parseInput(const string& input) {
         for(int i = 0; i < parts.size(); i++) {
             string p = parts[i];
             if( p.size() == 0) continue;
-            int num = stringToInt(p);
+            int num = stoi(p);
             if(i % 2 == 0) {
                 right.push_back(num);
             } else {

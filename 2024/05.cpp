@@ -18,8 +18,8 @@ Instructions parseInput(const string& input)
 	for(auto line : lines) {
 		if(line.find('|') != string::npos) {
 			vector<string> parts = splitString(line, '|');
-			int left = stringToInt(parts[0]);
-			int right = stringToInt(parts[1]);
+			int left = stoi(parts[0]);
+			int right = stoi(parts[1]);
 			if(instructions.rules.find(left) == instructions.rules.end()) {
 				instructions.rules[left] = {};
 			}
@@ -29,7 +29,7 @@ Instructions parseInput(const string& input)
 			vector<string> parts = splitString(line, ',');
 			instructions.pagesOrders.push_back({});
 			for(auto part : parts) {
-				instructions.pagesOrders[pagesOrderIndex].push_back(stringToInt(part));
+				instructions.pagesOrders[pagesOrderIndex].push_back(stoi(part));
 			}
 			pagesOrderIndex++;
 		}
