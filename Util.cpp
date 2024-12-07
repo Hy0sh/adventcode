@@ -70,3 +70,17 @@ vector<size_t> findAll(const string &str, const string &sub)
 
 	return positions;
 }
+
+string trim(const string& str) {
+	size_t first = str.find_first_not_of(' ');
+	size_t last = str.find_last_not_of(' ');
+	return str.substr(first, (last - first + 1));
+}
+
+int sumVector(const vector<int>& vec, int start, int end) {
+	int sum = 0;
+	for (int i = start; i < end; i++) {
+		sum += vec[i];
+	}
+	return sum;
+}

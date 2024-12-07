@@ -33,4 +33,4 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 
-g++ ./$file ./Util.cpp ./Grid.cpp -o run.o && ./run.o $inputFile
+g++ ./$file ./Util.cpp -o run.o && ./run.o $inputFile
