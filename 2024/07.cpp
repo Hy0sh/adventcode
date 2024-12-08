@@ -3,6 +3,7 @@
 #include "../Util.h"
 #include <stdint.h>
 #include <string>
+#include <ranges>
 using namespace std;
 
 struct Instruction
@@ -51,10 +52,8 @@ vector<vector<char>> cartesianProduct(const vector<char> &vec, int length)
 	return result;
 }
 
-int64_t resolve(const string &input, vector<char> product)
+int64_t resolve(vector<Instruction> instructions, vector<char> product)
 {
-	vector<Instruction> instructions = parseInstruction(input);
-
 	int64_t total = 0;
 	map<int, vector<vector<char>>> cachProduct;
 	for(auto &instr : instructions) {
@@ -94,20 +93,21 @@ int64_t resolve(const string &input, vector<char> product)
 	return total;
 }
 
-int64_t solution_1(const string &input)
+int64_t solution_1(vector<Instruction> instructions)
 {	
-	return resolve(input, {'*', '+'});	
+	return resolve(instructions, {'*', '+'});	
 }
 
-int64_t solution_2(const string &input)
+int64_t solution_2(vector<Instruction> instructions)
 {
-	return resolve(input, {'*', '+', '|'});
+	return resolve(instructions, {'*', '+', '|'});
 }
 
 int main(int argc, char *argv[])
 {
 	string input = readInput(argv);
-	cout << "Part 1: " << solution_1(input) << '\n';
-	cout << "Part 2: " << solution_2(input) << '\n';
+	vector<Instruction> instructions = parseInstruction(input);
+	cout << "Part 1: " << solution_1(instructions) << '\n';
+	cout << "Part 2: " << solution_2(instructions) << '\n';
 	return 0;
 }
