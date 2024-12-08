@@ -226,6 +226,9 @@ class Grid {
         }
 
         void setCharAt(int x, int y, char c) {
+            if(x < 0 || x >= rows.size() || y < 0 || y >= rows[0].size()) {
+                return;
+            }
             rows[x][y] = c;
         }
 
