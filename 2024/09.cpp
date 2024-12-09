@@ -18,21 +18,6 @@ struct Instructions
 	int maxId;
 };
 
-vector<int> mooveBlocks(vector<int> blocks, int pos)
-{
-	for (int i = blocks.size() - 1; i > pos; i--)
-	{
-		if (blocks[i] != -1)
-		{
-			blocks[pos] = blocks[i];
-			blocks[i] = -1;
-			break;
-		}
-	}
-
-	return blocks;
-}
-
 int64_t checkSum(vector<int> blocks) {
 	int64_t sum = 0;
 	for(int i=0; i < blocks.size(); i++) {
