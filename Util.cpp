@@ -45,8 +45,8 @@ string readInput(char* argv[]) {
 	return fileContent;
 }
 
-string trim(const string& str) {
-	size_t first = str.find_first_not_of(' ');
-	size_t last = str.find_last_not_of(' ');
+string trimEnd(const string& str, char c = ' ') {
+	size_t first = str.find_first_not_of(c);
+	size_t last = str.find_last_not_of(c);
 	return str.substr(first, (last - first + 1));
 }
