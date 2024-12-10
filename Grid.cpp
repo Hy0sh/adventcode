@@ -213,6 +213,21 @@ class Grid {
             return rows[x][y];
         }
 
+        int getX() {
+            return x;
+        }
+
+        int getY() {
+            return y;
+        }
+
+        int getCurrentIntValue() {
+            if(current() == '\0') {
+                return INT_MIN;
+            }
+            return current() - '0';
+        }
+
         void setDebug(bool debug) {
             this->debug = debug;
         }
@@ -230,6 +245,18 @@ class Grid {
                 return;
             }
             rows[x][y] = c;
+        }
+
+        vector<vector<int>> getCharPositions(char c) {
+            vector<vector<int>> positions;
+            for(int i = 0; i < rows.size(); i++) {
+                for(int j = 0; j < rows[i].size(); j++) {
+                    if(rows[i][j] == c) {
+                        positions.push_back({i, j});
+                    }
+                }
+            }
+            return positions;
         }
 
         char getByDirection(Direction direction) {
