@@ -25,8 +25,11 @@ ino64_t resolve(const string &input, int blink)
 		incrementCountTypeSones(countTypeSones, number, 1);
 	}
 
+	ino64_t sum = 0;
+
 	for (int i = 0; i < blink; i++)
 	{
+		sum = 0;
 		map<string, ino64_t> newCountTypeSones = {};
 		for (auto [stone, count] : countTypeSones)
 		{
@@ -35,6 +38,7 @@ ino64_t resolve(const string &input, int blink)
 				for (string cacheStone : cache[stone])
 				{
 					incrementCountTypeSones(newCountTypeSones, cacheStone, count);
+					sum += newCountTypeSones[cacheStone];
 				}
 				continue;
 			}
@@ -43,6 +47,7 @@ ino64_t resolve(const string &input, int blink)
 			{
 				cache[stone] = {"1"};
 				incrementCountTypeSones(newCountTypeSones, "1", count);
+				sum += newCountTypeSones[stone];
 			}
 			else if (stone.size() % 2 == 0)
 			{
@@ -50,22 +55,18 @@ ino64_t resolve(const string &input, int blink)
 				for (string cacheStone : cache[stone])
 				{
 					incrementCountTypeSones(newCountTypeSones, cacheStone, count);
+					sum += newCountTypeSones[stone];
 				}
 			}
 			else
 			{
 				cache[stone] = {to_string(stoll(stone) * 2024)};
 				incrementCountTypeSones(newCountTypeSones, cache[stone][0], count);
+				sum += newCountTypeSones[stone];
 			}
 
 		}
 		countTypeSones = newCountTypeSones;
-	}
-
-	ino64_t sum = 0;
-	for (auto [stone, count] : countTypeSones)
-	{
-		sum += count;
 	}
 
 	return sum;
