@@ -48,16 +48,10 @@ struct Side {
 	{
 		vector<vector<int>> reverseDirections;
 		
-		if(direction == "up") {
+		if(direction == "up" || direction == "down") {
 			reverseDirections = {{0,1},{0,-1}};
 		}
-		if(direction == "down") {
-			reverseDirections = {{0,1},{0,-1}};
-		}
-		if(direction == "left") {
-			reverseDirections = {{1,0},{-1,0}};
-		}
-		if(direction == "right") {
+		if(direction == "left" || direction == "right") {
 			reverseDirections = {{1,0},{-1,0}};
 		}
 
@@ -78,49 +72,6 @@ struct Region
 {
 	vector<Pos> positions;
 	char letter;
-	bool isTouching(const Pos &p, char letterP)
-	{
-		if (letter != letterP)
-		{
-			return false;
-		}
-		for (Pos b : positions)
-		{
-			if (
-				(b.x == p.x && b.y + 1 == p.y) ||
-				(b.x == p.x && b.y - 1 == p.y) ||
-				(b.x + 1 == p.x && b.y == p.y) ||
-				(b.x - 1 == p.x && b.y == p.y))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	bool isTouching(Region &r)
-	{
-		if (letter != r.letter)
-		{
-			return false;
-		}
-		for (Pos b : positions)
-		{
-			if (r.isTouching(b, letter))
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void merge(Region &r)
-	{
-		for (Pos p : r.positions)
-		{
-			positions.push_back(p);
-		}
-		r.positions.clear();
-	}
 
 	map<string, vector<int>> getPerimeterPoint(Pos p)
 	{
@@ -197,6 +148,15 @@ struct Region
 	}
 };
 
+bool sortPositions(Pos a, Pos b)
+{
+	if (a.x == b.x)
+	{
+		return a.y < b.y;
+	}
+	return a.x < b.x;
+}
+
 vector<Region> getRegions(Grid *grid)
 {
 	vector<Region> regions;
@@ -263,15 +223,6 @@ int solution_1(const string &input)
 		price += r.getPerimeter() * r.positions.size();
 	}
 	return price;
-}
-
-bool sortPositions(Pos a, Pos b)
-{
-	if (a.x == b.x)
-	{
-		return a.y < b.y;
-	}
-	return a.x < b.x;
 }
 
 int solution_2(const string &input)
