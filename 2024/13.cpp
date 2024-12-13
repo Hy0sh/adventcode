@@ -17,12 +17,6 @@ struct Game {
 		int64_t priceX = price.x + offset;
 		int64_t priceY = price.y + offset;
 
-		/**
-		 * Solve the following system of equations:
-		 * a*(x*buttonA)+d*(x*buttonB) = priceX
-		 * a*(y*buttonA)+d*(y*buttonB) = priceY
-		 */
-
 		int64_t det = priceX * buttonA.y - priceY * buttonA.x;
 		int64_t d = det / (buttonB.x * buttonA.y - buttonB.y * buttonA.x);
 		int64_t remaningX = priceX - d * buttonB.x;
