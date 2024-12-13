@@ -17,13 +17,19 @@ struct Game {
 		int64_t priceX = price.x + offset;
 		int64_t priceY = price.y + offset;
 
-		int64_t numerator = priceX * buttonA.y - priceY * buttonA.x;
-		int64_t determinant = numerator / (buttonB.x * buttonA.y - buttonB.y * buttonA.x);
-		int64_t remaningX = priceX - determinant * buttonB.x;
+		/**
+		 * Solve the following system of equations:
+		 * a*(x*buttonA)+d*(x*buttonB) = priceX
+		 * a*(y*buttonA)+d*(y*buttonB) = priceY
+		 */
+
+		int64_t det = priceX * buttonA.y - priceY * buttonA.x;
+		int64_t d = det / (buttonB.x * buttonA.y - buttonB.y * buttonA.x);
+		int64_t remaningX = priceX - d * buttonB.x;
 		int64_t a = remaningX / buttonA.x;
 
-		bool isPossible = (a * buttonA.y + determinant * buttonB.y == priceY && remaningX % buttonA.x == 0);
-		return isPossible ? 3 * a + determinant : 0;
+		bool isPossible = (a * buttonA.y + d * buttonB.y == priceY && remaningX % buttonA.x == 0);
+		return isPossible ? 3 * a + d : 0;
 	}
 };
 
