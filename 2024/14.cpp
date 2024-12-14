@@ -90,7 +90,7 @@ bool isEasterEgg(vector<Robot> robots, int width, int height) {
 				robots_representation[y+2][x+1] &&  // bottom of triangle right
 				robots_representation[y+2][x-1] && // bottom of triangle left
 				robots_representation[y+2][x+2] && // bottom of triangle right
-				robots_representation[y+2][x-2] && // bottom of triangle left
+				robots_representation[y+2][x-2] // bottom of triangle left
 			) {
 				return true;
 			}
