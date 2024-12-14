@@ -78,30 +78,20 @@ vector<vector<bool>> getRobotRepresentation(vector<Robot> robots, int width, int
 }
 
 bool isEasterEgg(vector<Robot> robots, int width, int height) {
-	// start of christmas tree
-	vector<vector<bool>> tree_partern = {
-		{ false, false, true, false, false },
-		{ false, true, true, true, false },
-		{ true, true, true, true, true },
-	};
-
 	vector<vector<bool>> robots_representation = getRobotRepresentation(robots, width, height);
 
-	for(int y = 0; y < height  - tree_partern.size(); y++) {
-		for(int x = 0; x < width - tree_partern[0].size(); x++) {
-			bool found = true;
-			for(int row = 0; row < tree_partern.size(); row++) {
-				for(int col = 0; col < tree_partern[0].size(); col++) {
-					if(tree_partern[row][col] && !robots_representation[y + row][x + col]) {
-						found = false;
-						break;
-					}
-				}
-				if(!found) {
-					break;
-				}
-			}
-			if(found) {
+	for(int y = 2; y < height  - 2; y++) {
+		for(int x = 2; x < width - 2; x++) {
+			if(robots_representation[y][x] &&  // top of triangle
+				robots_representation[y+1][x] &&  // second row of triangle middle
+				robots_representation[y+1][x+1] && // second row of triangle right
+				robots_representation[y+1][x-1] && // second row of triangle left
+				robots_representation[y+2][x] &&  // bottom of triangle middle
+				robots_representation[y+2][x+1] &&  // bottom of triangle right
+				robots_representation[y+2][x-1] && // bottom of triangle left
+				robots_representation[y+2][x+2] && // bottom of triangle right
+				robots_representation[y+2][x-2] && // bottom of triangle left
+			) {
 				return true;
 			}
 		}
