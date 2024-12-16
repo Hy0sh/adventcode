@@ -25,7 +25,13 @@ class Grid {
             debug = false;
         }
 
-        static Grid *createFromInput(string input) {
+        static Grid* createFromVectors(vector<vector<char>> rows) {
+            Grid *grid = new Grid();
+            grid->rows = rows;
+            return grid;
+        }
+
+        static Grid* createFromInput(string input) {
             Grid *grid = new Grid();
             vector<string> lines = splitString(input, '\n');
             for (int i = 0; i < lines.size(); i++) {
@@ -81,39 +87,39 @@ class Grid {
             return true;
         }
 
-        bool nextInDirection(Direction direction)
+        bool nextInDirection(Direction direction, int steps = 1)
         {
             switch(direction) {
                 case Direction::RIGHT:
-                    if(y + 1 < rows[x].size()) {
+                    if(y + steps < rows[x].size()) {
                         y++;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::LEFT:
-                    if(y - 1 >= 0) {
+                    if(y - steps >= 0) {
                         y--;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::UP:
-                    if(x - 1 >= 0) {
+                    if(x - steps >= 0) {
                         x--;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::DOWN:
-                    if(x + 1 < rows.size()) {
+                    if(x + steps < rows.size()) {
                         x++;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::UP_RIGHT:
-                    if (x - 1 >= 0 && y + 1 < rows[x].size()) {
+                    if (x - steps >= 0 && y + steps < rows[x].size()) {
                         x--;
                         y++;
                     } else {
@@ -121,7 +127,7 @@ class Grid {
                     }
                     break;
                 case Direction::UP_LEFT:
-                    if (x - 1 >= 0 && y - 1 >= 0) {
+                    if (x - steps >= 0 && y - steps >= 0) {
                         x--;
                         y--;
                     } else {
@@ -129,7 +135,7 @@ class Grid {
                     }
                     break;
                 case Direction::DOWN_RIGHT:
-                    if (x + 1 < rows.size() && y + 1 < rows[x].size()) {
+                    if (x + steps < rows.size() && y + steps < rows[x].size()) {
                         x++;
                         y++;
                     } else {
@@ -137,7 +143,7 @@ class Grid {
                     }
                     break;
                 case Direction::DOWN_LEFT:
-                    if (x + 1 < rows.size() && y - 1 >= 0) {
+                    if (x + steps < rows.size() && y - steps >= 0) {
                         x++;
                         y--;
                     } else {
