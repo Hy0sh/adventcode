@@ -158,7 +158,7 @@ int64_t solution_2(const string &input)
 	Program program = parseProgram(input);
 	int64_t A = pow(8, program.instructions.size() - 1);
 	int64_t limit = pow(8, program.instructions.size());
-	
+
 	while (A < limit)
 	{
 		cout << "Trying A = " << A << '\n';
@@ -168,7 +168,7 @@ int64_t solution_2(const string &input)
 		{
 			return A;
 		}
-		A += 3528;
+		A += 1;
 	}
 	
 	return 0;
