@@ -20,7 +20,7 @@ vector<Instruction> parseInstruction(const string &str)
 		Instruction instr;
 		vector<string> parts = splitString(s, ':');
 		instr.result = strtoll(parts[0].c_str(), nullptr, 10);
-		vector<string> parts2 = splitString(trim(parts[1]), ' ');
+		vector<string> parts2 = splitString(trim(parts[1], ' '), ' ');
 		for (auto &p : parts2)
 		{
 			instr.numbers.push_back(strtoll(p.c_str(), nullptr, 10));

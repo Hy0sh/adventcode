@@ -50,3 +50,12 @@ string trimEnd(const string& str, char c = ' ') {
 	size_t last = str.find_last_not_of(c);
 	return str.substr(first, (last - first + 1));
 }
+
+string trimStart (const string& str, char c = ' ') {
+	size_t first = str.find_first_not_of(c);
+	return str.substr(first, str.size() - first);
+}
+
+string trim(const string& str, char c = ' ') {
+	return trimStart(trimEnd(str, c), c);
+}
