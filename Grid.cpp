@@ -25,6 +25,13 @@ class Grid {
             debug = false;
         }
 
+        Grid(int length, int height) {
+            rows = vector<vector<char>>(length, vector<char>(height, '.'));
+            x = 0;
+            y = 0;
+            debug = false;
+        }
+
         static Grid* createFromVectors(vector<vector<char>> rows) {
             Grid *grid = new Grid();
             grid->rows = rows;
