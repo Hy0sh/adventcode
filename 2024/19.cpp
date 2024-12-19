@@ -23,7 +23,7 @@ int64_t getNbPossibleTowels(string towel, vector<string> colors, map<string, int
 	return nbPossibleColors;
 }
 
-int solution_1(const string& input) {
+int64_t solve(const string& input,int64_t(*solution)(int64_t nbTowels)) {
 	vector<string> lines = splitString(input, '\n');
 	vector<string> colors;
 
@@ -35,30 +35,22 @@ int solution_1(const string& input) {
 	map<string, int64_t> cache;
 	for(int i = 2; i < lines.size(); i++) {
 		string towel = lines[i];
-		if(getNbPossibleTowels(towel, colors, &cache) > 0) {
-			nbTowels++;
-		}
+		nbTowels += solution(getNbPossibleTowels(towel, colors, &cache));
 	}
 
 	return nbTowels;
 }
 
+int64_t solution_1(const string& input) {
+	return solve(input, [](int64_t nbTowels) {
+		return (int64_t)(nbTowels > 0 ? 1 : 0);
+	});
+}
+
 int64_t solution_2(const string& input) {
-	vector<string> lines = splitString(input, '\n');
-	vector<string> colors;
-
-	for(string color : splitString(lines[0], ',')) {
-		color = trim(color, ' ');
-		colors.push_back(color);
-	}
-	int64_t nbTowels = 0;
-	map<string, int64_t> cache;
-	for(int i = 2; i < lines.size(); i++) {
-		string towel = lines[i];
-		nbTowels += getNbPossibleTowels(towel, colors, &cache);
-	}
-
-	return nbTowels;
+	return solve(input, [](int64_t nbTowels) {
+		return nbTowels;
+	});
 }
 
 int main(int argc, char* argv[]) {
