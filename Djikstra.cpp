@@ -68,7 +68,7 @@ bool isWall(char c, vector<char> walls){
     return false;
 }
 
-struct SolveInput {
+struct DjikstraInput {
     Grid *grid;
     vector<char> walls;
     bool debug;
@@ -79,7 +79,12 @@ struct SolveInput {
 	vector<Direction> directions;
 };
 
-tuple<int, vector<PrintNode>> solveDjikstra(const SolveInput &solveInput){
+struct DjikstraOutput {
+	int bestScore;
+	vector<vector<PrintNode>> paths;
+}; 
+
+DjikstraOutput solveDjikstra(const DjikstraInput &solveInput){
 	Grid *grid = solveInput.grid;
 
 	vector<Direction> directions = solveInput.directions;
@@ -100,7 +105,7 @@ tuple<int, vector<PrintNode>> solveDjikstra(const SolveInput &solveInput){
 	pq.push(solveInput.start);
 
 	int bestScore = INT_MAX;
-	map<int, vector<PrintNode>> paths;
+	vector<vector<PrintNode>> paths;
 
 	while(!pq.empty()){
 		Node current = pq.top();
@@ -110,13 +115,11 @@ tuple<int, vector<PrintNode>> solveDjikstra(const SolveInput &solveInput){
 			continue;
 		}
 
-		if(current.x == solveInput.end.x && current.y == solveInput.end.y){
+		if(current.x == solveInput.end.x && current.y == solveInput.end.y  && current.distance <= bestScore){
 			bestScore = min(bestScore, current.distance);
 			PrintNode pr(current.x, current.y, current.direction, current.distance);
 			current.path.push_back(pr);
-			for(auto node : current.path){
-				paths[current.distance].push_back(node);
-			}
+			paths.push_back(current.path);
 			if(!solveInput.combineSameWays){
 				break;
 			}
@@ -165,5 +168,5 @@ tuple<int, vector<PrintNode>> solveDjikstra(const SolveInput &solveInput){
         grid->print();
     }
 
-	return {bestScore, paths[bestScore]};
+	return {bestScore, paths};
 }

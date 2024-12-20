@@ -27,7 +27,7 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 	vector<int> endPosition = grid->find('E');
 	Node start(startPosition);
 	Node end(endPosition);
-	SolveInput solveInput = {
+	DjikstraInput solveInput = {
 		grid,
 		{'#'},
 		false,
@@ -40,9 +40,9 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 		directions,
 	};
 
-	tuple<int, vector<PrintNode>> result = solveDjikstra(solveInput);
-	vector<PrintNode> path = get<1>(result);
-	int bestScore = get<0>(result);
+	DjikstraOutput result = solveDjikstra(solveInput);
+	vector<PrintNode> path = result.paths[0];
+	int bestScore = result.bestScore;
 
 	map<PrintNode, int> pathMap;
 	for(auto node : path){
