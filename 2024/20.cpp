@@ -16,7 +16,13 @@ PrintNode getPrintNode(int x, int y, vector<PrintNode> path) {
 	return PrintNode(-1, -1, Direction::UP);
 }
 
-map<PrintNode, int> getNodesWithDistance(Grid* grid, vector<Direction> directions) {
+int getDistance(PrintNode a, PrintNode b){
+	return abs(a.x - b.x) + abs(a.y - b.y);
+}
+
+int solve(const string& input, int maxDistance, int minSavedTime) {
+	Grid* grid = Grid::createFromInput(input);
+	vector<Direction> directions = {Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT};
 	vector<int> startPosition = grid->find('S');
 	vector<int> endPosition = grid->find('E');
 	Node start(startPosition);
@@ -47,33 +53,16 @@ map<PrintNode, int> getNodesWithDistance(Grid* grid, vector<Direction> direction
 		pathMap[currentNode] = bestScore--;
 	}while(grid->nextInDirection(currentNode.direction) && pathMap.size() < path.size());
 
-	return pathMap;
-}
-
-
-
-int getDistance(PrintNode a, PrintNode b){
-	return abs(a.x - b.x) + abs(a.y - b.y);
-}
-
-int solution_1(const string& input, int minSavedTime) {
-	Grid* grid = Grid::createFromInput(input);
-	vector<Direction> directions = {Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT};
-	map<PrintNode, int> pathMap = getNodesWithDistance(grid, directions);
-
 	int nbShortCuts = 0;
 	for (auto [node, dte] : pathMap)
 	{
-		for(Direction dir : directions) {
-			grid->setPos(node.x, node.y);
-			if(grid->getByDirection(dir) == '#'){
-				grid->nextInDirection(dir, 2);
-				PrintNode nextNode(grid->getPos()[0], grid->getPos()[1], dir);
-				if(pathMap.find(nextNode) != pathMap.end()){
-					int score = pathMap[nextNode];
-					if((dte - score) -2 >= minSavedTime){
-						nbShortCuts++;
-					}
+		for(auto [nextNode, nextNodeScore]: pathMap){
+			if(node == nextNode){
+				continue;
+			}
+			if(getDistance(node, nextNode) <= maxDistance) {
+				if((dte - nextNodeScore) - getDistance(node, nextNode) >= minSavedTime){
+					nbShortCuts++;
 				}
 			}
 		}
@@ -82,27 +71,16 @@ int solution_1(const string& input, int minSavedTime) {
 	return nbShortCuts;
 }
 
+
+
+
+
+int solution_1(const string& input, int minSavedTime) {
+	return solve(input, 2, minSavedTime);
+}
+
 int solution_2(const string& input, int minSavedTime) {
-	Grid* grid = Grid::createFromInput(input);
-	vector<Direction> directions = {Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT};
-	map<PrintNode, int> pathMap = getNodesWithDistance(grid, directions);
-
-	int nbShortCuts = 0;
-	for (auto [node, dte] : pathMap)
-	{
-		for(auto [nextNode, nextNodeScore]: pathMap){
-			if(node == nextNode){
-				continue;
-			}
-			if(getDistance(node, nextNode) <= 20) {
-				if((dte - nextNodeScore) - getDistance(node, nextNode) >= minSavedTime){
-					nbShortCuts++;
-				}
-			}
-		}
-	}
-
-	return nbShortCuts;
+	return solve(input, 20, minSavedTime);;
 }
 
 int main(int argc, char* argv[]) {
