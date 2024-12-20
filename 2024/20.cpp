@@ -36,7 +36,7 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 		},
 		start,
 		end,
-		{Direction::UP, Direction::DOWN, Direction::LEFT, Direction::RIGHT},
+		directions,
 	};
 
 	map<int, vector<PrintNode>> paths = solve(solveInput);
@@ -44,8 +44,6 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 	int bestScore = paths.begin()->first;
 
 	map<PrintNode, int> pathMap;
-	map<int,int> groupScores;
-
 	PrintNode currentNode = getPrintNode(start.x, start.y, path);
 	grid->setPos(currentNode.x, currentNode.y);
 	do{
@@ -70,10 +68,6 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 	
 	return nbShortCuts;
 }
-
-
-
-
 
 int solution_1(const string& input, int minSavedTime) {
 	return solve(input, 2, minSavedTime);
