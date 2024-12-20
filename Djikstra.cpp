@@ -6,13 +6,15 @@
 struct PrintNode {
 	int x;
 	int y;
+	int distance;
 	Direction direction;
 
-	PrintNode(int x, int y, Direction direction)
+	PrintNode(int x, int y, Direction direction, int distance)
 	{
 		this->x = x;
 		this->y = y;
 		this->direction = direction;
+		this->distance = distance;
 	}
 
 	bool operator==(const PrintNode &a) const
@@ -70,13 +72,14 @@ struct SolveInput {
     Grid *grid;
     vector<char> walls;
     bool debug;
+	bool combineSameWays;
     int(*distanceFunction) (Node &current, Node &next, Direction dir);
 	Node start;
 	Node end;
 	vector<Direction> directions;
 };
 
-map<int, vector<PrintNode>> solve(const SolveInput &solveInput){
+tuple<int, vector<PrintNode>> solveDjikstra(const SolveInput &solveInput){
 	Grid *grid = solveInput.grid;
 
 	vector<Direction> directions = solveInput.directions;
@@ -109,9 +112,13 @@ map<int, vector<PrintNode>> solve(const SolveInput &solveInput){
 
 		if(current.x == solveInput.end.x && current.y == solveInput.end.y){
 			bestScore = min(bestScore, current.distance);
-			current.path.push_back({current.x, current.y, current.direction});
+			PrintNode pr(current.x, current.y, current.direction, current.distance);
+			current.path.push_back(pr);
 			for(auto node : current.path){
 				paths[current.distance].push_back(node);
+			}
+			if(!solveInput.combineSameWays){
+				break;
 			}
 		}
 
@@ -127,7 +134,7 @@ map<int, vector<PrintNode>> solve(const SolveInput &solveInput){
                 next.distance = solveInput.distanceFunction(current, next, dir);
 				next.direction = dir;
 				next.path = current.path;
-				next.path.push_back({current.x, current.y, dir});
+				next.path.push_back({current.x, current.y, dir, current.distance});
 
 				pq.push(next);
 			}
@@ -158,5 +165,5 @@ map<int, vector<PrintNode>> solve(const SolveInput &solveInput){
         grid->print();
     }
 
-	return paths;
+	return {bestScore, paths[bestScore]};
 }

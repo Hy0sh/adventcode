@@ -13,7 +13,7 @@ PrintNode getPrintNode(int x, int y, vector<PrintNode> path) {
 			return node;
 		}
 	}
-	return PrintNode(-1, -1, Direction::UP);
+	return PrintNode(-1, -1, Direction::UP, INT_MAX);
 }
 
 int getDistance(PrintNode a, PrintNode b){
@@ -31,6 +31,7 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 		grid,
 		{'#'},
 		false,
+		false,
 		[] (Node &current, Node &next, Direction dir) {
 			return current.distance + 1;
 		},
@@ -39,17 +40,14 @@ int solve(const string& input, int maxDistance, int minSavedTime) {
 		directions,
 	};
 
-	map<int, vector<PrintNode>> paths = solve(solveInput);
-	vector<PrintNode> path = paths.begin()->second;
-	int bestScore = paths.begin()->first;
+	tuple<int, vector<PrintNode>> result = solveDjikstra(solveInput);
+	vector<PrintNode> path = get<1>(result);
+	int bestScore = get<0>(result);
 
 	map<PrintNode, int> pathMap;
-	PrintNode currentNode = getPrintNode(start.x, start.y, path);
-	grid->setPos(currentNode.x, currentNode.y);
-	do{
-		currentNode = getPrintNode(grid->getPos()[0], grid->getPos()[1], path);
-		pathMap[currentNode] = bestScore--;
-	}while(grid->nextInDirection(currentNode.direction) && pathMap.size() < path.size());
+	for(auto node : path){
+		pathMap[node] = bestScore -  node.distance; // distance from end
+	}
 
 	int nbShortCuts = 0;
 	for (auto [node, dte] : pathMap)

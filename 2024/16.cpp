@@ -13,7 +13,7 @@ int distanceFunction(Node &current, Node &next, Direction dir)
 	return current.distance + (dir == current.direction ? 1 : 1001);
 }
 
-map<int, vector<PrintNode>> getPaths(const string &input){
+tuple<int, vector<PrintNode>> getPaths(const string &input){
 	Grid *grid = Grid::createFromInput(input);
 	vector<int> startPosition = grid->find('S');
 	vector<int> endPosition = grid->find('E');
@@ -34,19 +34,20 @@ map<int, vector<PrintNode>> getPaths(const string &input){
 		grid,
 		{'#'},
 		false,
+		true,
 		&distanceFunction,
 		start,
 		end,
 		directions
 	};
 
-	return solve(solveInput);
+	return solveDjikstra(solveInput);
 }
 
 int64_t solution_1(const string &input)
 {
-	map<int, vector<PrintNode>> paths = getPaths(input);
-	return paths.begin()->first;
+	tuple<int, vector<PrintNode>> paths = getPaths(input);
+	return get<0>(paths);
 }
 
 
@@ -54,10 +55,10 @@ int64_t solution_1(const string &input)
 int solution_2(const string &input)
 {
 	
-	map<int, vector<PrintNode>> paths = getPaths(input);	
+	tuple<int, vector<PrintNode>> paths = getPaths(input);	
 	set<PrintNode> commonTiles;
-	int bestScore = paths.begin()->first;
-	for(auto node : paths[bestScore]){
+	int bestScore = get<0>(paths);
+	for(auto node : get<1>(paths)){
 		commonTiles.insert(node);
 	}
 
