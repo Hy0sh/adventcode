@@ -3,7 +3,7 @@
 #include <map>
 #include <set>
 #include "../Util.h"
-#include "../Dijkstra.cpp"
+#include "../Djikstra.cpp"
 
 
 using namespace std;
@@ -46,11 +46,7 @@ map<int, vector<PrintNode>> getPaths(const string &input){
 int64_t solution_1(const string &input)
 {
 	map<int, vector<PrintNode>> paths = getPaths(input);
-	int bestScore = INT_MAX;
-	for(auto path : paths){
-		bestScore = min(bestScore, path.first);
-	}
-	return bestScore;
+	return paths.begin()->first;
 }
 
 
@@ -60,10 +56,7 @@ int solution_2(const string &input)
 	
 	map<int, vector<PrintNode>> paths = getPaths(input);	
 	set<PrintNode> commonTiles;
-	int bestScore = INT_MAX;
-	for(auto path : paths){
-		bestScore = min(bestScore, path.first);
-	}
+	int bestScore = paths.begin()->first;
 	for(auto node : paths[bestScore]){
 		commonTiles.insert(node);
 	}

@@ -8,6 +8,13 @@ struct PrintNode {
 	int y;
 	Direction direction;
 
+	PrintNode(int x, int y, Direction direction)
+	{
+		this->x = x;
+		this->y = y;
+		this->direction = direction;
+	}
+
 	bool operator==(const PrintNode &a) const
 	{
 		return x == a.x && y == a.y;

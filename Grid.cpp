@@ -99,60 +99,60 @@ class Grid {
             switch(direction) {
                 case Direction::RIGHT:
                     if(y + steps < rows[x].size()) {
-                        y++;
+                        y += steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::LEFT:
                     if(y - steps >= 0) {
-                        y--;
+                        y -= steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::UP:
                     if(x - steps >= 0) {
-                        x--;
+                        x -= steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::DOWN:
                     if(x + steps < rows.size()) {
-                        x++;
+                        x += steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::UP_RIGHT:
                     if (x - steps >= 0 && y + steps < rows[x].size()) {
-                        x--;
-                        y++;
+                        x -= steps;
+                        y += steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::UP_LEFT:
                     if (x - steps >= 0 && y - steps >= 0) {
-                        x--;
-                        y--;
+                        x -= steps;
+                        y -= steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::DOWN_RIGHT:
                     if (x + steps < rows.size() && y + steps < rows[x].size()) {
-                        x++;
-                        y++;
+                        x += steps;
+                        y += steps;
                     } else {
                         return false;
                     }
                     break;
                 case Direction::DOWN_LEFT:
                     if (x + steps < rows.size() && y - steps >= 0) {
-                        x++;
-                        y--;
+                        x += steps;
+                        y -= steps;
                     } else {
                         return false;
                     }
