@@ -146,7 +146,7 @@ DjikstraOutput solveDjikstra(const DjikstraInput &solveInput){
 	}
 
     if(solveInput.debug){
-        for(auto node : paths[bestScore]){
+        for(auto node : paths[0]){
             char c = ' ';
             switch (node.direction)
             {

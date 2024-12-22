@@ -14,6 +14,14 @@ enum Direction {
     UP_LEFT,
     DOWN_RIGHT,
     DOWN_LEFT,
+    NONE
+};
+
+struct GridNode {
+    int x;
+    int y;
+    char value;
+    Direction direction;
 };
 
 class Grid {
@@ -236,6 +244,11 @@ class Grid {
         void setPos(int x, int y) {
             this->x = x;
             this->y = y;
+        }
+
+        void setPos(vector<int> pos) {
+            this->x = pos[0];
+            this->y = pos[1];
         }
 
         char current() {
