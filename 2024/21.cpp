@@ -120,8 +120,8 @@ int64_t findShortestPath(vector<int> start, vector<int> end, Game *game, int lay
                   findShortestPath(getNextVertical, getAPos, game, nextLayer, cache));  // Revenir à 'A'
     }
 	// deux déplacements sont nécessaires mais :
-	// - soit le départ est sur la première colonne et le layer est inférieur au nombre maximal de layers
-	// - soit le départ est sur la première colonne et l'arrivée est sur la dernière ligne et le layer est égal au nombre maximal de layers
+	// - soit on est sur le pavé de direction avec le dépar sur la première colonne
+	// - soit on est sur le pavé numérique avec l'arrivée sur la première colonne et la fin sur la dernière ligne
     else if ((start[1] == 0 && layer < game->nbLayers) || (start[1] == 0 && end[0] == 3 && layer == game->nbLayers))
     {
         result = (findShortestPath(getAPos, getNextHorizontal, game, nextLayer, cache) +  // Aller de 'A' à la direction horizontale
