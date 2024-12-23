@@ -66,7 +66,6 @@ vector<vector<string>> bronKerbosch(set<string> R, set<string> P, set<string> X,
 	for (int i = 0; i < P.size(); i++)
 	{
 		string v = *P.begin();
-		P.erase(v);
 		set<string> new_R = R;
 		new_R.insert(v);
 		set<string> new_P;
