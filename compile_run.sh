@@ -14,6 +14,22 @@ if [ -z "$year" ]; then
     exit 1
 fi
 
+if [ "$filname" == "all" ]; then
+    for i in {1..25}
+    do
+        if [ $i -lt 10 ]; then
+            i="0$i"
+        fi
+        # if is a valid file
+        if [ -f "./$year/$i.cpp" ]; then
+            echo ""
+            echo -e "\033[0;32mRunning day $i\033[0m"
+            ./compile_run.sh $year $i $testMode
+        fi
+    done
+    exit 0
+fi
+
 file="${year}/${filname}.cpp"
 inputFile="./${year}/inputs/${filname}"
 
@@ -33,4 +49,4 @@ if [ ! -f "$file" ]; then
     exit 1
 fi
 
-g++ ./$file ./Util.cpp -o run.o && ./run.o $inputFile $testMode
+g++ ./$file ./Util.cpp -o run.o && time ./run.o $inputFile $testMode

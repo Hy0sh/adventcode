@@ -121,7 +121,7 @@ int solution_2(const string& input) {
 			robots.push_back(newRobot);
 		}
 		if(isEasterEgg(robots, game.maxX, game.maxY)) {
-			printGrid(getRobotRepresentation(robots, game.maxX, game.maxY));
+			// printGrid(getRobotRepresentation(robots, game.maxX, game.maxY));
 			break;
 		}
 		rounds++;

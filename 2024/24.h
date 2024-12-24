@@ -25,9 +25,9 @@ struct Operation
 };
 
 
-bool verifyIntermediateXOR(string wire, int number, map<string, Operation> operations);
-bool verifyRecarry(string wire, int number, map<string, Operation> operations);
-bool verifyDirectCarry(string wire, int number, map<string, Operation> operations);
-bool verifyCarryBit(string wire, int number, map<string, Operation> operations);
-bool verifyZ(string wire, int number, map<string, Operation> operations);
-bool verify(int number, map<string, Operation> operations);
+bool verifyXor(string wire, int number, map<string, Operation> *operations);
+bool verifyRecarry(string wire, int number, map<string, Operation> *operations);
+bool verifyDirectCarry(string wire, int number, map<string, Operation> *operations);
+bool verifyCarryBit(string wire, int number, map<string, Operation> *operations);
+bool verifyZ(string wire, int number, map<string, Operation> *operations);
+bool verify(int number, map<string, Operation> *operations);

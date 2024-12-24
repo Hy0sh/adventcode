@@ -119,49 +119,57 @@ string makeWireName(string letter, int number)
 	return letter +(number < 10 ? "0" : "")+ to_string(number);
 }
 
-bool verifyIntermediateXOR(string wire, int number, map<string, Operation> operations)
+// Verify if the wire is a XOR operation
+// if XOR operation, verify if the x and y wires are equal to the corresponding number on Y and X
+bool verifyXor(string wire, int number, map<string, Operation> *operations)
 {
-	if(operations.find(wire) == operations.end())
+	if(operations->find(wire) == operations->end())
 		return false;
 	
-	Operation op = operations[wire];
+	Operation op = operations->at(wire);
 	if(op.op != "XOR")
 		return false;
 
 	return min(op.x, op.y) == makeWireName("x", number) && max(op.x, op.y) == makeWireName("y", number);
 }
 
-bool verifyRecarry(string wire, int number, map<string, Operation> operations)
+// Verify if the wire is a AND operation
+// if AND operation, verify if Xor and x is XOR operation and y is a recarry operation or vice versa
+bool verifyRecarry(string wire, int number, map<string, Operation> *operations)
 {
-	if(operations.find(wire) == operations.end())
+	if(operations->find(wire) == operations->end())
 		return false;
 	
-	Operation op = operations[wire];
+	Operation op = operations->at(wire);
 	if(op.op != "AND")
 		return false;
 
-	return (verifyIntermediateXOR(op.x, number, operations) && verifyCarryBit(op.y, number, operations)) ||
-		   (verifyIntermediateXOR(op.y, number, operations) && verifyCarryBit(op.x, number, operations));
+	return (verifyXor(op.x, number, operations) && verifyCarryBit(op.y, number, operations)) ||
+		   (verifyXor(op.y, number, operations) && verifyCarryBit(op.x, number, operations));
 }
 
-bool verifyDirectCarry(string wire, int number, map<string, Operation> operations)
+// Verify if the wire is a AND operation
+// if AND operation, verify if the x and y wires are equal to the corresponding number on X and Y
+bool verifyAnd(string wire, int number, map<string, Operation> *operations)
 {
-	if(operations.find(wire) == operations.end())
+	if(operations->find(wire) == operations->end())
 		return false;
 	
-	Operation op = operations[wire];
+	Operation op = operations->at(wire);
 	if(op.op != "AND")
 		return false;
 
 	return makeWireName("x", number) == min(op.x, op.y) && makeWireName("y", number) == max(op.x, op.y);
 }
 
-bool verifyCarryBit(string wire, int number, map<string, Operation> operations)
+// if number is 1, verify if the wire is a AND operation and the x and y wires are equal to x00 and y00
+// else verify if the wire is a OR operation and if previous x and y wires are a AND and a recarry operation or vice versa
+bool verifyCarryBit(string wire, int number, map<string, Operation> *operations)
 {
-	if(operations.find(wire) == operations.end())
+	if(operations->find(wire) == operations->end())
 		return false;
 	
-	Operation op = operations[wire];
+	Operation op = operations->at(wire);
 	if(number == 1)
 	{
 		if(op.op != "AND")
@@ -172,17 +180,20 @@ bool verifyCarryBit(string wire, int number, map<string, Operation> operations)
 	if(op.op != "OR")
 		return false;
 
-	return (verifyDirectCarry(op.x, number - 1, operations) && verifyRecarry(op.y, number - 1, operations)) ||
-		   (verifyDirectCarry(op.y, number - 1, operations) && verifyRecarry(op.x, number - 1, operations));
+	return (verifyAnd(op.x, number - 1, operations) && verifyRecarry(op.y, number - 1, operations)) ||
+		   (verifyAnd(op.y, number - 1, operations) && verifyRecarry(op.x, number - 1, operations));
 }
 
 // recursive function to verify the z wire
-bool verifyZ(string wire, int number, map<string, Operation> operations)
+// if number is 0, we verify if the x and y wires are equal to x00 and y00
+// if number is greater than 0, we verify if the wire is a XOR operation
+// else we verify if the wire is a XOR operation and the carry bit is correct
+bool verifyZ(string wire, int number, map<string, Operation> *operations)
 {
-	if(operations.find(wire) == operations.end())
+	if(operations->find(wire) == operations->end())
 		return false;
 	
-	Operation op = operations[wire];
+	Operation op = operations->at(wire);
 	if(op.op != "XOR")
 		return false;
 
@@ -191,29 +202,30 @@ bool verifyZ(string wire, int number, map<string, Operation> operations)
 		return "x00" == min(op.x, op.y) && "y00" == max(op.x, op.y);
 	
 
-	return (verifyIntermediateXOR(op.x, number, operations) && verifyCarryBit(op.y, number, operations)) ||
-		   (verifyIntermediateXOR(op.y, number, operations) && verifyCarryBit(op.x, number, operations));
+	return (verifyXor(op.x, number, operations) && verifyCarryBit(op.y, number, operations)) ||
+		   (verifyXor(op.y, number, operations) && verifyCarryBit(op.x, number, operations));
 	
 }
 
 // Verify wire number is correct
-bool verify(int number, map<string, Operation> operations)
+bool verify(int number, map<string, Operation> *operations)
 {
 	return verifyZ(makeWireName("z", number), number, operations);
 }
 
 // Calculate how far the system progresses
-int progress(map<string, Operation> operations)
+int progress(map<string, Operation> *operations, int maxIterations)
 {
 	int number = 0;
-	while(true)
+	while(number <= maxIterations)
 	{
-		if(!verify(number, operations))
+		if(!verify(number, operations)){
 			return number;
+		}
 		number++;
 	}
 
-	return -1;
+	return number;
 }
 
 string solution_2(const string &input)
@@ -226,8 +238,7 @@ string solution_2(const string &input)
 	// we are looking for 4 swaps
 	for(int i = 0; i < 4; i++)
 	{
-		int basline = progress(operations);
-		cout << basline << '\n';
+		int basline = progress(&operations,45);
 		for(auto &[x, _] : operations)
 		{
 			bool found = false;
@@ -240,7 +251,7 @@ string solution_2(const string &input)
 				Operation temp = operations[x];
 				operations[x] = operations[y];
 				operations[y] = temp;
-				if( progress(operations) > basline){
+				if( progress(&operations,45) > basline){
 					// we found a swap
 					swaps.push_back(x);
 					swaps.push_back(y);
