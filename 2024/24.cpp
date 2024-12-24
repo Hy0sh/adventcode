@@ -232,13 +232,14 @@ string solution_2(const string &input)
 {
 	Game game = parseInput(input);
 	map<string, Operation> operations = game.operations;
+	int maxIterations = game.getWires("z").size();
 	
 	vector<string> swaps;
 
 	// we are looking for 4 swaps
 	for(int i = 0; i < 4; i++)
 	{
-		int basline = progress(&operations,45);
+		int basline = progress(&operations,maxIterations);
 		for(auto &[x, _] : operations)
 		{
 			bool found = false;
@@ -251,7 +252,7 @@ string solution_2(const string &input)
 				Operation temp = operations[x];
 				operations[x] = operations[y];
 				operations[y] = temp;
-				if( progress(&operations,45) > basline){
+				if( progress(&operations,maxIterations) > basline){
 					// we found a swap
 					swaps.push_back(x);
 					swaps.push_back(y);
