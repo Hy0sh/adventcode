@@ -14,3 +14,4 @@ testing input
     ./compile_run.sh {year} {day} {test}
     ./compile_run.sh 2024 01 test
     ./compile_run.sh 2024 01
+    ./compile_run.sh 2024 all
