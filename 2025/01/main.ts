@@ -16,7 +16,7 @@ const solution = (lines: string[]) => {
             solution2 += Math.floor((position + amount) / 100);
             position = (position + amount) % 100;
         } else {
-            solution2 += amount >= position || position === 0 ? Math.floor((amount - position) / 100) + Number(position !== 0) : 0;
+            solution2 += Math.floor((amount - position) / 100) + Number(position !== 0);
             position = (position - amount % 100 + 100) % 100;
         }
         
