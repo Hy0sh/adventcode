@@ -11,7 +11,6 @@ export class Day04 extends Main {
 
     protected solve1(): number {
         let nbAviableRollsOfPaper = 0;
-        let canMove = true;
         do {
             const adjacentPositions = this.grid.getAdjacentPositions([
                 Direction.RIGHT, 
@@ -27,18 +26,13 @@ export class Day04 extends Main {
                 nbAviableRollsOfPaper++;
 
             }
-            canMove = this.grid.move(Direction.RIGHT);
-            if(!canMove) {
-                canMove = this.grid.moveToNextLine();
-            }
-        } while (canMove);
+        } while (this.grid.move(Direction.RIGHT) || this.grid.moveToNextLine());
 
         return nbAviableRollsOfPaper;
     }
 
     protected solve2(): number {
         let nbAviableRollsOfPaper = 0;
-        let canMove = true;
         let positions: Position[] = [];
         do {
             positions = [];
@@ -59,11 +53,7 @@ export class Day04 extends Main {
                     positions.push(this.grid.getPosition());
     
                 }
-                canMove = this.grid.move(Direction.RIGHT);
-                if(!canMove) {
-                    canMove = this.grid.moveToNextLine();
-                }
-            } while (canMove);
+            } while (this.grid.move(Direction.RIGHT) || this.grid.moveToNextLine());
     
             for(const position of positions) {
                 this.grid.setPosition(position);
