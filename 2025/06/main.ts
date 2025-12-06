@@ -20,26 +20,14 @@ export class Day06 extends Main {
             const chars = charGrid[lineIdx];
             const isLastLine = lineIdx === numLines - 1;
             const targetArray = isLastLine ? this.operators : (this.numbers[lineIdx] = []);
-            
-            let currentString = '';
-            for (let charIdx = 0; charIdx < chars.length; charIdx++) {
-                const char = chars[charIdx];
-                
-                if (char !== ' ') {
-                    currentString += char;
-                } else if (separatorColumns.has(charIdx)) {
-                    if (currentString) {
-                        targetArray.push(isLastLine ? currentString.trim() : currentString);
-                        currentString = '';
-                    }
-                } else {
-                    currentString += ' ';
-                }
+
+            let previousIndex = 0;
+            for(const separatorColumn of separatorColumns){
+                targetArray.push(chars.slice(previousIndex, separatorColumn).join(''));
+                previousIndex = separatorColumn + 1;
             }
-            
-            if (currentString) {
-                targetArray.push(isLastLine ? currentString.trim() : currentString);
-            }
+
+            targetArray.push(chars.slice(previousIndex, chars.length).join(''));
         }
     }
 
@@ -47,7 +35,7 @@ export class Day06 extends Main {
         let grandTotal = 0;
         
         for (let colIdx = 0; colIdx < this.operators.length; colIdx++) {
-            const operator = this.operators[colIdx];
+            const operator = this.operators[colIdx].trim();
             let result = operator === '*' ? 1 : 0;
             
             for (const numbers of this.numbers) {
@@ -65,7 +53,7 @@ export class Day06 extends Main {
         let grandTotal = 0;
         
         for (let colIdx = this.operators.length - 1; colIdx >= 0; colIdx--) {
-            const operator = this.operators[colIdx];
+            const operator = this.operators[colIdx].trim();
             const stringLength = this.numbers[0][colIdx].length;
             
             let result = operator === '*' ? 1 : 0;
