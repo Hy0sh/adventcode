@@ -32,14 +32,18 @@ export class Position {
             case Direction.DOWN:
                 return new Position(this.x, this.y + 1);
             case Direction.UP_RIGHT:
-                return new Position(this.x - 1, this.y + 1);
+                return new Position(this.x + 1, this.y - 1);
             case Direction.UP_LEFT:
                 return new Position(this.x - 1, this.y - 1);
             case Direction.DOWN_RIGHT:
                 return new Position(this.x + 1, this.y + 1);
             case Direction.DOWN_LEFT:
-                return new Position(this.x + 1, this.y - 1);
+                return new Position(this.x - 1, this.y + 1);
         }
+    }
+
+    toString() : string {
+        return "(" + this.x + "," + this.y + ")";
     }
 }
 
@@ -52,15 +56,15 @@ export class Grid {
     constructor(lines: string[]) {
         this.grid = lines.map(line => line.split(''));
         this.currentPosition = new Position(0, 0);
-        this.limitX = this.grid.length;
-        this.limitY = this.grid[0]?.length ?? 0;
+        this.limitY = this.grid.length;
+        this.limitX = this.grid[0]?.length ?? 0;
     }
 
     get(position: Position) : string | null {
         if(position.x < 0 || position.x >= this.limitX || position.y < 0 || position.y >= this.limitY) {
             return null;
         }
-        return this.grid[position.x][position.y];
+        return this.grid[position.y][position.x];
     }
 
     setPosition(position: Position) {
@@ -72,11 +76,11 @@ export class Grid {
     }
 
     setCurrentChar(char: string) {
-        this.grid[this.currentPosition.x][this.currentPosition.y] = char;
+        this.grid[this.currentPosition.y][this.currentPosition.x] = char;
     }
 
     getCurrentChar() : string {
-        return this.grid[this.currentPosition.x][this.currentPosition.y];
+        return this.grid[this.currentPosition.y][this.currentPosition.x];
     }
 
     getAdjacentPositions(directions: Direction[]) : Position[] {
@@ -100,6 +104,17 @@ export class Grid {
         }
         this.currentPosition = new Position(0, this.currentPosition.y);
         return true;
+    }
+    moveToPreviousLine() {
+        if(!this.move(Direction.UP)) {
+            return false;
+        }
+        this.currentPosition = new Position(this.limitX - 1, this.currentPosition.y);
+        return true;
+    }
+
+    scrollGrid(callback: (position: Position) => boolean) {
+        while (!callback(this.currentPosition) && (this.move(Direction.RIGHT) || this.moveToNextLine()));
     }
 
     print() {
