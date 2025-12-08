@@ -33,7 +33,7 @@ export class Day08 extends Main {
         this.pairs.sort((a, b) => a.distance - b.distance);
     }
 
-    private findCircuitContaining(circuits: Position3D[][], point: Position3D, pointToCircuit: Map<Position3D, Position3D[]>): Position3D[] | undefined {
+    private findCircuitContaining(point: Position3D, pointToCircuit: Map<Position3D, Position3D[]>): Position3D[] | undefined {
         return pointToCircuit.get(point);
     }
 
@@ -48,8 +48,8 @@ export class Day08 extends Main {
         pointToCircuit: Map<Position3D, Position3D[]>,
         pair: {pointA: Position3D, pointB: Position3D}
     ): Position3D[] | null {
-        const circuitA = this.findCircuitContaining(circuits, pair.pointA, pointToCircuit);
-        const circuitB = this.findCircuitContaining(circuits, pair.pointB, pointToCircuit);
+        const circuitA = this.findCircuitContaining(pair.pointA, pointToCircuit);
+        const circuitB = this.findCircuitContaining(pair.pointB, pointToCircuit);
         
         if(circuitA && circuitB) {
             if(circuitA !== circuitB) {
