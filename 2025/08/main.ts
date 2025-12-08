@@ -33,57 +33,38 @@ export class Day08 extends Main {
         this.pairs.sort((a, b) => a.distance - b.distance);
     }
 
-    private findCircuitContaining(point: Position3D, pointToCircuit: Map<Position3D, Position3D[]>): Position3D[] | undefined {
-        return pointToCircuit.get(point);
-    }
-
-    private addToCircuitMap(pointToCircuit: Map<Position3D, Position3D[]>, circuit: Position3D[]): void {
-        for (const point of circuit) {
-            pointToCircuit.set(point, circuit);
-        }
-    }
-
     private mergeCircuits(
         circuits: Position3D[][], 
-        pointToCircuit: Map<Position3D, Position3D[]>,
         pair: {pointA: Position3D, pointB: Position3D}
     ): Position3D[] | null {
-        const circuitA = this.findCircuitContaining(pair.pointA, pointToCircuit);
-        const circuitB = this.findCircuitContaining(pair.pointB, pointToCircuit);
+        const circuitA = circuits.find(circuit => circuit.includes(pair.pointA));
+        const circuitB = circuits.find(circuit => circuit.includes(pair.pointB));
         
         if(circuitA && circuitB) {
             if(circuitA !== circuitB) {
                 circuitA.push(...circuitB);
-                // Mettre à jour tous les points de circuitB pour qu'ils pointent vers circuitA
-                for (const point of circuitB) {
-                    pointToCircuit.set(point, circuitA);
-                }
                 circuits.splice(circuits.indexOf(circuitB), 1);
                 return circuitA;
             }
         } else if(circuitA) {
             circuitA.push(pair.pointB);
-            pointToCircuit.set(pair.pointB, circuitA);
             return circuitA;
         } else if(circuitB) {
             circuitB.push(pair.pointA);
-            pointToCircuit.set(pair.pointA, circuitB);
             return circuitB;
         } else {
             const newCircuit = [pair.pointA, pair.pointB];
             circuits.push(newCircuit);
-            this.addToCircuitMap(pointToCircuit, newCircuit);
         }
         return null;
     }
     
     protected solve1(): number {
         const circuits: Position3D[][] = [];
-        const pointToCircuit = new Map<Position3D, Position3D[]>();
         const limit = this.positions.length === 20 ? 10 : 1000;
         
         for(let i = 0; i < limit && i < this.pairs.length; i++) {
-            this.mergeCircuits(circuits, pointToCircuit, this.pairs[i]);
+            this.mergeCircuits(circuits, this.pairs[i]);
         }
         
         return circuits.sort((a, b) => b.length - a.length).slice(0, 3).reduce((acc, circuit) => acc * circuit.length, 1);
@@ -91,11 +72,10 @@ export class Day08 extends Main {
 
     protected solve2(): number {
         const circuits: Position3D[][] = [];
-        const pointToCircuit = new Map<Position3D, Position3D[]>();
         
         for(let i = 0; i < this.pairs.length; i++) {
             const pair = this.pairs[i];
-            const mergedCircuit = this.mergeCircuits(circuits, pointToCircuit, pair);
+            const mergedCircuit = this.mergeCircuits(circuits, pair);
             
             if(mergedCircuit && mergedCircuit.length === this.positions.length) {
                 return pair.pointA.x * pair.pointB.x;
