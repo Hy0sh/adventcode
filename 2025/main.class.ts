@@ -16,7 +16,15 @@ export abstract class Main {
     protected abstract solve2(): number;
 
     public solve() : {solution1: number, solution2: number} {
+        const startParseInput = performance.now();
         this.parseInput();
-        return {solution1: this.solve1(), solution2: this.solve2()};
+        console.log(`Time taken to parse input: ${performance.now() - startParseInput} milliseconds`);
+        const startSolve1 = performance.now();
+        const solution1 = this.solve1();
+        console.log(`Time taken to solve part 1: ${performance.now() - startSolve1} milliseconds`);
+        const startSolve2 = performance.now();
+        const solution2 = this.solve2();
+        console.log(`Time taken to solve part 2: ${performance.now() - startSolve2} milliseconds`);
+        return {solution1, solution2};
     }
 }
