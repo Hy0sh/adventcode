@@ -1,26 +1,15 @@
 import { Main } from '../main.class';
-
-class Position3D {
-    constructor(public x: number, public y: number, public z: number) {}
-
-    getDistanceSquared(other: Position3D): number {
-        return Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2) + Math.pow(this.z - other.z, 2);
-    }
-
-    toString(): string {
-        return `(${this.x},${this.y},${this.z})`;
-    }
-}
+import { Point3D } from '../geometry/Point3D';
 
 export class Day08 extends Main {
 
-    private positions: Position3D[] = [];
-    private pairs: {distance: number, pointA: Position3D, pointB: Position3D}[] = [];
+    private positions: Point3D[] = [];
+    private pairs: {distance: number, pointA: Point3D, pointB: Point3D}[] = [];
 
     protected parseInput(): void {
         this.positions = this.lines.map(line => {
             const [x, y, z] = line.split(',').map(Number);
-            return new Position3D(x, y, z);
+            return new Point3D(x, y, z);
         });
     
         for(let i = 0; i < this.positions.length; i++) {
@@ -34,9 +23,9 @@ export class Day08 extends Main {
     }
 
     private mergeCircuits(
-        circuits: Position3D[][], 
-        pair: {pointA: Position3D, pointB: Position3D}
-    ): Position3D[] | null {
+        circuits: Point3D[][], 
+        pair: {pointA: Point3D, pointB: Point3D}
+    ): Point3D[] | null {
         const circuitA = circuits.find(circuit => circuit.includes(pair.pointA));
         const circuitB = circuits.find(circuit => circuit.includes(pair.pointB));
         
@@ -60,7 +49,7 @@ export class Day08 extends Main {
     }
     
     protected solve1(): number {
-        const circuits: Position3D[][] = [];
+        const circuits: Point3D[][] = [];
         const limit = this.positions.length === 20 ? 10 : 1000;
         
         for(let i = 0; i < limit && i < this.pairs.length; i++) {
@@ -71,7 +60,7 @@ export class Day08 extends Main {
     }
 
     protected solve2(): number {
-        const circuits: Position3D[][] = [];
+        const circuits: Point3D[][] = [];
         
         for(let i = 0; i < this.pairs.length; i++) {
             const pair = this.pairs[i];
