@@ -1,4 +1,4 @@
-import { Direction, Grid, Position } from '../grid.class';
+import { Direction, Grid, Position } from '../geometry/grid.class';
 import { Main } from '../main.class';
 
 export class Day07 extends Main {

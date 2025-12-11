@@ -1,4 +1,5 @@
 import { Main } from '../main.class';
+import { BFS } from '../graph/bfs.class';
 // @ts-ignore
 import lpSolver from 'javascript-lp-solver';
 
@@ -41,33 +42,16 @@ class Machine {
     }
 
     // BFS pour trouver le nombre minimal d'étapes pour atteindre l'état cible
-    turnOnSequence() :number {
-        // File d'attente : [état actuel, nombre d'étapes]
-        const queue: [boolean[], number][] = [[this.lightState.slice(), 0]];
-        const visited = new Set<string>();
-        visited.add(this.stateToKey(this.lightState));
-
-        while (queue.length > 0) {
-            const [currentState, steps] = queue.shift()!;
-            
-            // Vérifier si on a atteint l'état cible
-            if (this.isTargetState(currentState)) {
-                return steps;
-            }
-
-            // Essayer chaque bouton
-            for (const button of this.buttons) {
-                const newState = this.applyButton(currentState, button);
-                const key = this.stateToKey(newState);
-                
-                if (!visited.has(key)) {
-                    visited.add(key);
-                    queue.push([newState, steps + 1]);
-                }
-            }
-        }
+    turnOnSequence(): number {
+        const bfs = new BFS<boolean[], {}>({
+            getNeighbors: (state) => {
+                return this.buttons.map(button => this.applyButton(state, button));
+            },
+            isTarget: (state) => this.isTargetState(state),
+            nodeToString: (state) => this.stateToKey(state),
+        });
         
-        return -1; 
+        return bfs.findShortestDistance(this.lightState.slice(), {});
     }
 
     adjustJolts() {
