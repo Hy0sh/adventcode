@@ -10,10 +10,9 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
-    "rootDir": "./",
     "types": ["node"]
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../typescript/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
 

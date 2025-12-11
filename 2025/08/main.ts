@@ -1,5 +1,6 @@
-import { Main } from '../main.class';
-import { Point3D } from '../geometry/Point3D';
+import { Main } from '../../typescript/main.class';
+import { Point3D } from '../../typescript/geometry/Point3D';
+import { UnionFind } from '../../typescript/graph/union-find.class';
 
 export class Day08 extends Main {
 
@@ -21,52 +22,47 @@ export class Day08 extends Main {
     
         this.pairs.sort((a, b) => a.distance - b.distance);
     }
-
-    private mergeCircuits(
-        circuits: Point3D[][], 
-        pair: {pointA: Point3D, pointB: Point3D}
-    ): Point3D[] | null {
-        const circuitA = circuits.find(circuit => circuit.includes(pair.pointA));
-        const circuitB = circuits.find(circuit => circuit.includes(pair.pointB));
-        
-        if(circuitA && circuitB) {
-            if(circuitA !== circuitB) {
-                circuitA.push(...circuitB);
-                circuits.splice(circuits.indexOf(circuitB), 1);
-                return circuitA;
-            }
-        } else if(circuitA) {
-            circuitA.push(pair.pointB);
-            return circuitA;
-        } else if(circuitB) {
-            circuitB.push(pair.pointA);
-            return circuitB;
-        } else {
-            const newCircuit = [pair.pointA, pair.pointB];
-            circuits.push(newCircuit);
-        }
-        return null;
-    }
     
     protected solve1(): number {
-        const circuits: Point3D[][] = [];
-        const limit = this.positions.length === 20 ? 10 : 1000;
+        const uf = new UnionFind<Point3D>((point) => `${point.x},${point.y},${point.z}`);
         
-        for(let i = 0; i < limit && i < this.pairs.length; i++) {
-            this.mergeCircuits(circuits, this.pairs[i]);
+        // Initialiser tous les points
+        for (const point of this.positions) {
+            uf.makeSet(point);
         }
         
-        return circuits.sort((a, b) => b.length - a.length).slice(0, 3).reduce((acc, circuit) => acc * circuit.length, 1);
+        const limit = this.positions.length === 20 ? 10 : 1000;
+        
+        // Union des pairs les plus proches
+        for(let i = 0; i < limit && i < this.pairs.length; i++) {
+            uf.union(this.pairs[i].pointA, this.pairs[i].pointB);
+        }
+        
+        // Obtenir les 3 plus grands circuits
+        const sets = uf.getSets();
+        const circuitSizes = Array.from(sets.values())
+            .map(circuit => circuit.length)
+            .sort((a, b) => b - a)
+            .slice(0, 3);
+        
+        return circuitSizes.reduce((acc, size) => acc * size, 1);
     }
 
     protected solve2(): number {
-        const circuits: Point3D[][] = [];
+        const uf = new UnionFind<Point3D>((point) => `${point.x},${point.y},${point.z}`);
         
+        // Initialiser tous les points
+        for (const point of this.positions) {
+            uf.makeSet(point);
+        }
+        
+        // Union progressive jusqu'à tout connecter
         for(let i = 0; i < this.pairs.length; i++) {
             const pair = this.pairs[i];
-            const mergedCircuit = this.mergeCircuits(circuits, pair);
+            uf.union(pair.pointA, pair.pointB);
             
-            if(mergedCircuit && mergedCircuit.length === this.positions.length) {
+            // Vérifier si tous les points sont connectés
+            if(uf.getSetSize(pair.pointA) === this.positions.length) {
                 return pair.pointA.x * pair.pointB.x;
             }
         }

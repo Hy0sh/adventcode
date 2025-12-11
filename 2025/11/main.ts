@@ -1,5 +1,5 @@
-import { Main } from '../main.class';
-import { DFS } from '../graph/dfs.class';
+import { Main } from '../../typescript/main.class';
+import { DFS } from '../../typescript/graph/dfs.class';
 
 export class Day11 extends Main {
 

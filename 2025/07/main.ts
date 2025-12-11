@@ -1,5 +1,5 @@
-import { Direction, Grid, Position } from '../geometry/grid.class';
-import { Main } from '../main.class';
+import { Direction, Grid, Position } from '../../typescript/geometry/grid.class';
+import { Main } from '../../typescript/main.class';
 
 export class Day07 extends Main {
 
@@ -51,34 +51,49 @@ export class Day07 extends Main {
         this.grid.setPosition(new Position(0, 0));
         this.grid.scrollGrid((position: Position) => this.grid.getCurrentChar() === 'S');
         
-        // Map: position -> nombre de timelines à cette position
-        let currentTimelines: Map<Position, number> = new Map();
-        currentTimelines.set(this.grid.getPosition(), 1);
+        // Map: position string -> nombre de timelines à cette position
+        // Utilise toString() car les objets Position sont comparés par référence, pas par valeur
+        let currentTimelines: Map<string, { position: Position, count: number }> = new Map();
+        
+        // Commencer juste après le 'S', comme dans solve1()
+        const startPos = new Position(this.grid.getPosition().x, this.grid.getPosition().y + 1);
+        currentTimelines.set(startPos.toString(), { position: startPos, count: 1 });
         
         let totalFinishedTimelines = 0;
         
         // Tant qu'il reste des timelines actives
         while (currentTimelines.size > 0) {
-            const nextTimelines: Map<Position, number> = new Map();
+            const nextTimelines: Map<string, { position: Position, count: number }> = new Map();
             
-            for (const [position, count] of currentTimelines.entries()) {
+            for (const { position, count } of currentTimelines.values()) {
                 this.grid.setPosition(position);
-                this.grid.move(Direction.DOWN);
-                
-                // Si on sort de la grille, ces timelines se terminent
-                if (!this.grid.get(this.grid.getPosition())) {
-                    totalFinishedTimelines += count;
-                    continue;
-                }
                 
                 // Si on rencontre un splitter, diviser en deux
                 if (this.grid.getCurrentChar() === '^') {
-                    this.grid.getAdjacentPositions([Direction.LEFT,Direction.RIGHT]).forEach(position => {
-                        nextTimelines.set(position, (nextTimelines.get(position) || 0) + count);
+                    this.grid.getAdjacentPositions([Direction.LEFT,Direction.RIGHT]).forEach(adjPos => {
+                        const key = adjPos.toString();
+                        const existing = nextTimelines.get(key);
+                        if (existing) {
+                            existing.count += count;
+                        } else {
+                            nextTimelines.set(key, { position: adjPos, count });
+                        }
                     });
                 } else {
-                    // Sinon, continuer à descendre
-                    nextTimelines.set(this.grid.getPosition(), (nextTimelines.get(this.grid.getPosition()) || 0) + count);
+                    // Sinon, essayer de continuer à descendre
+                    if (this.grid.move(Direction.DOWN)) {
+                        const currentPos = this.grid.getPosition();
+                        const key = currentPos.toString();
+                        const existing = nextTimelines.get(key);
+                        if (existing) {
+                            existing.count += count;
+                        } else {
+                            nextTimelines.set(key, { position: currentPos, count });
+                        }
+                    } else {
+                        // Si on ne peut pas bouger, la timeline se termine
+                        totalFinishedTimelines += count;
+                    }
                 }
             }
             

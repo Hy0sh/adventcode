@@ -1,5 +1,5 @@
-import { Main } from '../main.class';
-import { BFS } from '../graph/bfs.class';
+import { Main } from '../../typescript/main.class';
+import { BFS } from '../../typescript/graph/bfs.class';
 // @ts-ignore
 import lpSolver from 'javascript-lp-solver';
 

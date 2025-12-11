@@ -1,4 +1,5 @@
-import { Main } from '../main.class';
+import { Main } from '../../typescript/main.class';
+import { IntervalMerger } from '../../typescript/algorithms/interval-merger.class';
 
 export class Day05 extends Main {
 
@@ -10,21 +11,16 @@ export class Day05 extends Main {
     }
 
     protected solve1(): number {
-        return this.numbers.filter(number => this.ranges.some(range => number >= range[0] && number <= range[1])).length;
+        return this.numbers.filter(number => 
+            IntervalMerger.isPointCovered(this.ranges.map(r => [r[0], r[1]] as [number, number]), number)
+        ).length;
     }
 
     protected solve2(): number {
-        const sorted = this.ranges.sort((a, b) => a[0] - b[0]);
-        
-        const merged: number[][] = [];
-        for (const range of sorted) {
-            const last = merged.at(-1); // get the last range in the merged array
-            if (last && range[0] <= last[1] + 1) {
-                last[1] = Math.max(last[1], range[1]);
-            } else {
-                merged.push(range);
-            }
-        }
+        const merged = IntervalMerger.merge(
+            this.ranges.map(r => [r[0], r[1]] as [number, number]),
+            true // allowAdjacent
+        );
         
         return merged.reduce((total, range) => total + (range[1] - range[0] + 1), 0);
     }

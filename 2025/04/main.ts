@@ -1,5 +1,5 @@
-import { Direction, Grid, Position } from '../geometry/grid.class';
-import { Main } from '../main.class';
+import { Direction, Grid, Position } from '../../typescript/geometry/grid.class';
+import { Main } from '../../typescript/main.class';
 
 export class Day04 extends Main {
 

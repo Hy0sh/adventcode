@@ -1,4 +1,4 @@
-import { Main } from '../main.class';
+import { Main } from '../../typescript/main.class';
 
 export class Day02 extends Main {
 

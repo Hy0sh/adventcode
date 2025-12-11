@@ -1,7 +1,9 @@
-import { Main } from '../main.class';
-import { Point } from '../geometry/Point';
-import { Rectangle } from '../geometry/Rectangle';
-import { isPointInsidePolygon } from '../geometry/ray-casting-alghorithm';
+import { Main } from '../../typescript/main.class';
+import { Point } from '../../typescript/geometry/Point';
+import { Rectangle } from '../../typescript/geometry/Rectangle';
+import { isPointInsidePolygon } from '../../typescript/geometry/ray-casting-alghorithm';
+import { PrefixSum2D } from '../../typescript/algorithms/prefix-sum-2d.class';
+import { CoordinateCompression2D } from '../../typescript/algorithms/coordinate-compression.class';
 
 
 export class Day09 extends Main {
@@ -29,40 +31,30 @@ export class Day09 extends Main {
     }
 
     protected solve2(): number {
-        // compression des coordonnées
+        // Compression des coordonnées
         // https://medium.com/algorithms-digest/coordinate-compression-2fff95326fb
-        // 1. on récupère les x et y uniques et on les trie
-        const allX = [...new Set(this.points.map(p => p.x))].sort((a, b) => a - b);
-        const allY = [...new Set(this.points.map(p => p.y))].sort((a, b) => a - b);
+        const compression = new CoordinateCompression2D(
+            this.points.map(p => [p.x, p.y] as [number, number])
+        );
         
-        const W = allX.length;
-        const H = allY.length;
+        const [W, H] = compression.getCompressedSize();
         
-        // 2. Créer les mappings coord → index
-        const xToIdx = new Map<number, number>();
-        const yToIdx = new Map<number, number>();
-        allX.forEach((x, idx) => xToIdx.set(x, idx));
-        allY.forEach((y, idx) => yToIdx.set(y, idx));
-        
-        // 3. on crée le masque des points valides (rouge/vert)
+        // Créer le masque des points valides (rouge/vert)
         const mask: boolean[][] = Array(H).fill(0).map(() => Array(W).fill(false));
         
-        // on marque les points rouges
+        // Marquer les points rouges
         for (const p of this.points) {
-            const ix = xToIdx.get(p.x)!;
-            const iy = yToIdx.get(p.y)!;
-            mask[iy][ix] = true;
+            const compressed = compression.compress([p.x, p.y])!;
+            mask[compressed[1]][compressed[0]] = true;
         }
         
-        // on marque les segments verts (lignes horizontales ou verticales)
+        // Marquer les segments verts (lignes horizontales ou verticales)
         for (let i = 0; i < this.points.length; i++) {
             const p1 = this.points[i];
             const p2 = this.points[(i + 1) % this.points.length];
             
-            const idxX1 = xToIdx.get(p1.x)!;
-            const idxY1 = yToIdx.get(p1.y)!;
-            const idxX2 = xToIdx.get(p2.x)!;
-            const idxY2 = yToIdx.get(p2.y)!;
+            const [idxX1, idxY1] = compression.compress([p1.x, p1.y])!;
+            const [idxX2, idxY2] = compression.compress([p2.x, p2.y])!;
             
             if (p1.y === p2.y) {
                 // Segment horizontal
@@ -83,24 +75,14 @@ export class Day09 extends Main {
         
         // Remplir l'intérieur du polygone (flood fill ou scanline)
         console.log("Remplissage du polygone...");
-        this.fillPolygon(mask, W, H, allX, allY);
+        this.fillPolygon(mask, compression);
         
-        // 4. Créer le prefix sum pour tests O(1)
+        // Créer le prefix sum pour tests O(1)
         // https://www.geeksforgeeks.org/dsa/prefix-sum-2d-array/
         console.log("Création des prefix sums...");
-        const prefixSum: number[][] = Array(H + 1).fill(0).map(() => Array(W + 1).fill(0));
+        const prefixSum2D = new PrefixSum2D(mask);
         
-        for (let iy = 0; iy < H; iy++) {
-            for (let ix = 0; ix < W; ix++) {
-                prefixSum[iy + 1][ix + 1] = 
-                    (mask[iy][ix] ? 1 : 0) +
-                    prefixSum[iy][ix + 1] +
-                    prefixSum[iy + 1][ix] -
-                    prefixSum[iy][ix];
-            }
-        }
-        
-        // 5. Tester tous les rectangles en O(1)
+        // Tester tous les rectangles en O(1)
         console.log("Test des rectangles...");
         let bestArea = 0;
         
@@ -113,23 +95,11 @@ export class Day09 extends Main {
             const y1 = Math.min(squareArea.pointA.y, squareArea.pointB.y);
             const y2 = Math.max(squareArea.pointA.y, squareArea.pointB.y);
             
-            const ix1 = xToIdx.get(x1)!;
-            const ix2 = xToIdx.get(x2)!;
-            const iy1 = yToIdx.get(y1)!;
-            const iy2 = yToIdx.get(y2)!;
+            const [ix1, iy1] = compression.compress([x1, y1])!;
+            const [ix2, iy2] = compression.compress([x2, y2])!;
             
-            // Nombre de cellules dans le rectangle compressé
-            const cellsInRect = (ix2 - ix1 + 1) * (iy2 - iy1 + 1);
-            
-            // Nombre de points valides dans le rectangle (via prefix sum)
-            const validCount = 
-                prefixSum[iy2 + 1][ix2 + 1] -
-                prefixSum[iy1][ix2 + 1] -
-                prefixSum[iy2 + 1][ix1] +
-                prefixSum[iy1][ix1];
-            
-            // Si TOUS les points du rectangle sont valides
-            if (validCount === cellsInRect) {
+            // Vérifier si TOUS les points du rectangle sont valides
+            if (prefixSum2D.isRectangleFull(iy1, ix1, iy2, ix2)) {
                 console.log(`✓ Valid: area=${area}`);
                 bestArea = area;
             }
@@ -138,7 +108,11 @@ export class Day09 extends Main {
         return bestArea;
     }
     
-    private fillPolygon(mask: boolean[][], W: number, H: number, allX: number[], allY: number[]): void {
+    private fillPolygon(mask: boolean[][], compression: CoordinateCompression2D): void {
+        const allX = compression.xCompression.getAllCoordinates();
+        const allY = compression.yCompression.getAllCoordinates();
+        const [W, H] = compression.getCompressedSize();
+        
         // Pour chaque ligne Y, utiliser ray-casting
         for (let iy = 0; iy < H; iy++) {
             const y = allY[iy];
