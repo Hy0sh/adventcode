@@ -52,12 +52,14 @@ export class Grid {
     private currentPosition: Position;
     private limitX: number;
     private limitY: number;
+    private nbRotations: number = 0;
 
     constructor(lines: string[]) {
         this.grid = lines.map(line => line.split(''));
         this.currentPosition = new Position(0, 0);
         this.limitY = this.grid.length;
         this.limitX = this.grid[0]?.length ?? 0;
+        this.nbRotations = 0;
     }
 
     get(position: Position) : string | null {
@@ -69,6 +71,13 @@ export class Grid {
 
     setPosition(position: Position) {
         this.currentPosition = position;
+    }
+
+    setCharAt(position: Position, char: string | null) {
+        if(char === null) {
+            return;
+        }
+        this.grid[position.y][position.x] = char;
     }
 
     getPosition() : Position {
@@ -85,6 +94,14 @@ export class Grid {
 
     getAdjacentPositions(directions: Direction[]) : Position[] {
         return directions.map(direction => this.currentPosition.getAdjacentInLimits(direction, this.limitX, this.limitY)).filter(position => position !== null);
+    }
+
+    getWidth() : number {
+        return this.grid[0]?.length ?? 0;
+    }
+
+    getHeight() : number {
+        return this.grid.length;
     }
 
     move(direction: Direction, steps: number = 1) : boolean {
@@ -105,6 +122,7 @@ export class Grid {
         this.currentPosition = new Position(0, this.currentPosition.y);
         return true;
     }
+
     moveToPreviousLine() {
         if(!this.move(Direction.UP)) {
             return false;
@@ -117,9 +135,58 @@ export class Grid {
         while (!callback(this.currentPosition) && (this.move(Direction.RIGHT) || this.moveToNextLine()));
     }
 
+
+    merge(position: Position, grid: Grid, charMerged: string) {
+        for(let i = 0; i < grid.getHeight(); i++) {
+            for(let j = 0; j < grid.getWidth(); j++) {
+                const newPosition = new Position(position.x + j, position.y + i);
+                if(this.get(newPosition) === charMerged) {
+                    continue;
+                }
+                this.setCharAt(newPosition, grid.get(new Position(j, i)));
+            }
+        }
+    }
+
+    rotate() {
+        // Rotation 90° horaire: (x, y) -> (height-1-y, x)
+        const height = this.grid.length;
+        const width = this.grid[0]?.length ?? 0;
+        const newGrid: string[][] = [];
+        
+        for(let j = 0; j < width; j++) {
+            const newLine: string[] = [];
+            for(let i = height - 1; i >= 0; i--) {
+                newLine.push(this.grid[i][j]);
+            }
+            newGrid.push(newLine);
+        }
+        
+        this.grid = newGrid;
+        this.limitX = newGrid[0]?.length ?? 0;
+        this.limitY = newGrid.length;
+    }
+
+    flipHorizontal() {
+        // Miroir horizontal (inversion gauche-droite)
+        this.grid = this.grid.map(line => line.slice().reverse());
+    }
+
     print() {
         this.grid.forEach(line => {
             console.log(line.join(''));
         });
+    }
+
+    clone() : Grid {
+        return new Grid(this.grid.map(line => line.join('')));
+    }
+
+    static fromWidthAndHeight(width: number, height: number) : Grid {
+        let rows: string[] = [];
+        for(let i = 0; i < height; i++) {
+            rows.push('.'.repeat(width));
+        }
+        return new Grid(rows);
     }
 }
